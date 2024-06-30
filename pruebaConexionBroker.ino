@@ -5,8 +5,9 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 #include <ArduinoJson.h>
+#include <string>  // Necesario para std::string
 
-const char* mqttServer = "192.168.1.13";
+const char* mqttServer = "172.16.133.6";
 const int mqttPort = 1883;  // Puerto MQTT por defecto
 
 WiFiClient espClient;
@@ -27,9 +28,14 @@ void sendData();
 
 class CredentialsCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
-    std::string value = pCharacteristic->getValue();
-    if (value.length() > 0) {
-      String credentials = String(value.c_str());
+    // Obtener el valor como String
+    String value = pCharacteristic->getValue();
+    
+    // Convertir String a std::string usando value.c_str()
+    std::string stdString = std::string(value.c_str());
+    
+    if (stdString.length() > 0) {
+      String credentials = String(stdString.c_str());  // Convertir std::string de nuevo a String
       int separatorIndex = credentials.indexOf(';');
       ssid = credentials.substring(0, separatorIndex);
       password = credentials.substring(separatorIndex + 1);
